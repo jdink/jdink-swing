@@ -1,6 +1,7 @@
 package de.siteof.jdink.view.swing;
 
 import java.awt.BorderLayout;
+import java.io.File;
 
 import javax.swing.JFrame;
 
@@ -8,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import de.siteof.jdink.model.JDinkContext;
+import de.siteof.jdink.util.debug.JDinkObjectOutputUtil;
+import de.siteof.jdink.util.debug.JDinkXStreamObjectOutput;
 import de.siteof.jdink.view.AbstractJDinkView;
 import de.siteof.jdink.view.JDinkDebugView;
 import de.siteof.jdink.view.JDinkImage;
@@ -45,6 +48,7 @@ public class JDinkSwingView extends AbstractJDinkView implements JDinkView, JDin
 		}
 	}
 
+	@Override
 	public void updateView() {
 		context.getController().setChanged(true);
 		SwingUtil.invokeLater(new Runnable() {
@@ -56,11 +60,13 @@ public class JDinkSwingView extends AbstractJDinkView implements JDinkView, JDin
 		Thread.yield();
 	}
 
+	@Override
 	public JDinkImageFactory getImageLoader() {
 		waitInitialised();
 		return imageIOImageLoader;
 	}
 
+	@Override
 	public void setSplashImage(JDinkImage image) {
 		waitInitialised();
 		this.splashImage = image;
@@ -93,7 +99,8 @@ public class JDinkSwingView extends AbstractJDinkView implements JDinkView, JDin
 		}
 	}
 
-	public void init(JDinkContext context) {
+	@Override
+	public void init(JDinkContext context, Object viewInitParameter) {
 		initialising = true;
 		this.context = context;
 		SwingUtil.invokeLater(new Runnable() {
@@ -105,6 +112,12 @@ public class JDinkSwingView extends AbstractJDinkView implements JDinkView, JDin
 					log.error("Initialising the view failed - " + e, e);
 				}
 			}});
+	}
+
+	@Override
+	public void onBeforeLoad(JDinkContext context) {
+		JDinkObjectOutputUtil.setObjectOutput(new JDinkXStreamObjectOutput(
+				new File("./dump", context.getGameId())));
 	}
 
 	@Override

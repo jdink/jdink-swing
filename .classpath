@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="config"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jdink-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.siteof.cache"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.siteof.task"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.siteof.util.bean"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.siteof.util.filter"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.logging"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jdink-debug"/>
+	<classpathentry kind="lib" path="/jdink-lib/lib/jai/jai_codec.jar"/>
+	<classpathentry kind="lib" path="/jdink-lib/lib/jai/jai_core.jar"/>
+	<classpathentry kind="lib" path="/jdink-lib/lib/jai/jai_imageio.jar"/>
+	<classpathentry kind="lib" path="/jdink-lib/lib/jai/mlibwrapper_jai.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.log4j"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
