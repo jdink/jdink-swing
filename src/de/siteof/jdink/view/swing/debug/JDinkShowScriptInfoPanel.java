@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
@@ -115,6 +118,7 @@ public class JDinkShowScriptInfoPanel extends JPanel implements EnableDisposePan
 	private final JDinkContext context;
 	private final ScriptTableModel model;
 	private final JLabel label;
+	private final JDinkScriptTerminalPanel terminalPanel;
 	private boolean updatesPaused;
 	private boolean enabled;
 
@@ -124,8 +128,9 @@ public class JDinkShowScriptInfoPanel extends JPanel implements EnableDisposePan
 		this.setMinimumSize(new Dimension(100, 100));
 		this.setSize(new Dimension(100, 100));
 
+		JPanel topPanel = new JPanel(new BorderLayout());
+
 		JPanel bottomPanel = new JPanel(new BorderLayout());
-		bottomPanel.add(new JToggleButton(new PauseAction(context)));
 		bottomPanel.add(label = new JLabel("last updated: "), BorderLayout.SOUTH);
 		this.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -135,11 +140,31 @@ public class JDinkShowScriptInfoPanel extends JPanel implements EnableDisposePan
 			public void actionPerformed(ActionEvent e) {
 				update();
 			}});
-		this.add(refreshButton, BorderLayout.NORTH);
+		topPanel.add(refreshButton, BorderLayout.CENTER);
+		topPanel.add(new JToggleButton(new PauseAction(context)), BorderLayout.EAST);
+		this.add(topPanel, BorderLayout.NORTH);
 		JPanel panel = new JPanel(new BorderLayout());
 		JTable table = new JTable(model = new ScriptTableModel());
 		panel.add(table.getTableHeader(), BorderLayout.PAGE_START);
-		panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+//		panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				new JScrollPane(table),
+				terminalPanel = new JDinkScriptTerminalPanel(context));
+		panel.add(splitPane, BorderLayout.CENTER);
+		this.addComponentListener(new ComponentAdapter() {
+			private boolean shown;
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (!shown) {
+					splitPane.setDividerLocation(0.7d);
+					shown = true;
+				}
+			}
+		});
+//		panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
 		this.add(panel, BorderLayout.CENTER);
 //		model.setRows(Arrays.asList(new CollisionInformation(new JDinkHardnessCollisionImpl((byte) 10))));
 //		enable();
@@ -148,6 +173,7 @@ public class JDinkShowScriptInfoPanel extends JPanel implements EnableDisposePan
 
 	public void dispose() {
 		enabled = false;
+		terminalPanel.dispose();
 	}
 
 	@Override
