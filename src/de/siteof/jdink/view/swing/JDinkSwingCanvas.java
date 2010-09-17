@@ -58,27 +58,27 @@ public class JDinkSwingCanvas extends JPanel {
 
 	private static final Log log	= LogFactory.getLog(JDinkSwingCanvas.class);
 
-	private JDinkContext context;
-	private Font textFont;
+	private final JDinkContext context;
+	private final Font textFont;
 	private Image hardnessImage;
 	private int[] hardnessImageData;
 	private MemoryImageSource hardnessImageSource;
 	private Date hardnessImageExpireDate;
 
-	private long imageDataUpdateInterval = 500;
-	private Color frameBoundsColor = new Color(55, 255, 255, 40);
-	private Color spriteCollisionBoundsColor = new Color(55, 55, 255, 100);
-	private Color spriteLocationColor = new Color(255, 55, 255, 100);
-	
+	private final long imageDataUpdateInterval = 500;
+	private final Color frameBoundsColor = new Color(55, 255, 255, 40);
+	private final Color spriteCollisionBoundsColor = new Color(55, 55, 255, 100);
+	private final Color spriteLocationColor = new Color(255, 55, 255, 100);
+
 	private boolean hardnessVisible;
-	
+
 	private double scaleX = 1d;
 	private double scaleY = 1d;
-	
-	private List<JDinkSwingPaintListener> paintListeners =
+
+	private final List<JDinkSwingPaintListener> paintListeners =
 		new LinkedList<JDinkSwingPaintListener>();
-		
-	private Object repaintedLock = new Object();
+
+	private final Object repaintedLock = new Object();
 	private long lastRepainted;
 
 	public JDinkSwingCanvas(JDinkContext context) {
@@ -87,26 +87,26 @@ public class JDinkSwingCanvas extends JPanel {
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				onComponentResized(e);				
+				onComponentResized(e);
 			}
 		});
 	}
-	
+
 	public void addPaintListener(JDinkSwingPaintListener paintListener) {
 		if (!paintListeners.contains(paintListener)) {
 			paintListeners.add(paintListener);
 		}
 	}
-	
+
 	public void removePaintListener(JDinkSwingPaintListener paintListener) {
 		paintListeners.remove(paintListener);
 	}
-	
+
 	private void onComponentResized(ComponentEvent e) {
 		recalculateScale();
 		this.repaint();
 	};
-	
+
 	public JDinkPoint getTranslated(int x, int y) {
 		JDinkPoint result;
 		double scaleX = this.scaleX;
@@ -118,7 +118,7 @@ public class JDinkSwingCanvas extends JPanel {
 		}
 		return result;
 	}
-	
+
 	private void recalculateScale() {
 		Dimension preferredSize = this.getPreferredSize();
 		Dimension actualSize = this.getSize();
@@ -156,10 +156,10 @@ public class JDinkSwingCanvas extends JPanel {
 				} catch (InterruptedException e) {
 					log.info("[waitForView] wait interrupted");
 				}
-			}			
+			}
 		}
 	}
-	
+
 	private void notifyFullyRepainted() {
 		synchronized (repaintedLock) {
 			lastRepainted = System.currentTimeMillis();
@@ -190,28 +190,29 @@ public class JDinkSwingCanvas extends JPanel {
 	}
 
 
-	private Rectangle fitRectangleInto(Rectangle r, Rectangle clipRectangle) {
-		if (r.width > clipRectangle.width) {
-			r.width = clipRectangle.width;
-		}
-		if (r.height > clipRectangle.height) {
-			r.height = clipRectangle.height;
-		}
-		if (r.x + r.width > clipRectangle.x + clipRectangle.width) {
-			r.x = clipRectangle.x + clipRectangle.width - r.width;
-		}
-		if (r.y + r.height > clipRectangle.y + clipRectangle.height) {
-			r.y = clipRectangle.y + clipRectangle.height - r.height;
-		}
-		if (r.x < clipRectangle.x) {
-			r.x = clipRectangle.x;
-		}
-		if (r.y < clipRectangle.y) {
-			r.y = clipRectangle.y;
-		}
-		return r;
-	}
+//	private Rectangle fitRectangleInto(Rectangle r, Rectangle clipRectangle) {
+//		if (r.width > clipRectangle.width) {
+//			r.width = clipRectangle.width;
+//		}
+//		if (r.height > clipRectangle.height) {
+//			r.height = clipRectangle.height;
+//		}
+//		if (r.x + r.width > clipRectangle.x + clipRectangle.width) {
+//			r.x = clipRectangle.x + clipRectangle.width - r.width;
+//		}
+//		if (r.y + r.height > clipRectangle.y + clipRectangle.height) {
+//			r.y = clipRectangle.y + clipRectangle.height - r.height;
+//		}
+//		if (r.x < clipRectangle.x) {
+//			r.x = clipRectangle.x;
+//		}
+//		if (r.y < clipRectangle.y) {
+//			r.y = clipRectangle.y;
+//		}
+//		return r;
+//	}
 
+	@Override
 	protected void paintComponent(Graphics g) {
 		if ((scaleX == 1d) && (scaleY == 1d)) {
 			doPaintComponent(g);
@@ -270,7 +271,7 @@ public class JDinkSwingCanvas extends JPanel {
 
 		Graphics2D g2 = (Graphics2D) g;
 		Dimension size = this.getSize();
-		
+
 		Shape originalClipShape = g2.getClip();
 
 		JDinkController controller = context.getController();
@@ -294,12 +295,12 @@ public class JDinkSwingCanvas extends JPanel {
 
 		g2.setColor(backgroundColor);
 		g2.fillRect(0, 0, size.width, size.height);
-		
+
 		if (displayInformation.getTilesBounds() != null) {
 			JDinkRectangle r = displayInformation.getTilesBounds();
 			g2.setClip(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
-		
+
 		for (int i = 0; i < tiles.length; i++) {
 			JDinkTile tile = tiles[i];
 			if ((tile.getTileSet() != null) && (tile.getTileSet().getImage() != null)) {
@@ -318,12 +319,12 @@ public class JDinkSwingCanvas extends JPanel {
 		 * Rectangles are used for debug purpose only.
 		 */
 		Collection<Rectangle> rectangles = new LinkedList<Rectangle>();
-		
+
 		JDinkSpriteLayerView spriteLayer = null;
-		
+
 		JDinkRectangle layerClipBounds = null;
 		JDinkShape currentClipBounds = displayInformation.getTilesBounds();
-		
+
 		// draw the sprite images...
 		JDinkSpriteDisplayInformation[] sprites = spriteInformationList.toArray(
 				new JDinkSpriteDisplayInformation[spriteInformationList.size()]);
@@ -357,7 +358,7 @@ public class JDinkSwingCanvas extends JPanel {
 					if (sprite.isPositionAbsolute()) {
 						bounds = bounds.getLocatedTo(0, 0);
 					}
-					
+
 					JDinkShape finalClipBounds;
 					JDinkShape clipShape = sprite.getClipShape();
 					if (clipShape != null) {
@@ -377,7 +378,7 @@ public class JDinkSwingCanvas extends JPanel {
 						finalClipBounds = layerClipBounds;
 //						g2.setClip(originalClipShape);
 					}
-					
+
 					if ((finalClipBounds != currentClipBounds) &&
 							((currentClipBounds == null) || (!currentClipBounds.equals(finalClipBounds)))) {
 						if (finalClipBounds != null) {
@@ -425,7 +426,7 @@ public class JDinkSwingCanvas extends JPanel {
 				}
 			}
 		}
-		
+
 		g2.setClip(originalClipShape);
 
 
@@ -495,9 +496,67 @@ public class JDinkSwingCanvas extends JPanel {
 			}
 		}
 
+		drawTextSprites(g2, sprites);
+
+		if (hardnessVisible) {
+			if (updateImage) {
+				int width = memoryImageData.getWidth();
+				int height = memoryImageData.getHeight();
+				hardnessImageExpireDate = new Date(now.getTime() + imageDataUpdateInterval);
+				if (hardnessImage == null) {
+					hardnessImageData = imageData;
+					hardnessImageSource = new MemoryImageSource(
+							width, height, imageData, 0, width);
+					hardnessImageSource.setAnimated(true);
+					hardnessImage = this.createImage(hardnessImageSource);
+				} else {
+					hardnessImageSource.newPixels(0, 0, width, height);
+				}
+			}
+
+			if (hardnessImage != null) {
+				g2.drawImage(
+						hardnessImage,
+						context.getHardnessMap().getX(),
+						context.getHardnessMap().getY(),
+						this);
+			}
+		}
+
+		if (!paintListeners.isEmpty()) {
+			for (JDinkSwingPaintListener paintListener: paintListeners) {
+				paintListener.onPaint(g2);
+			}
+		}
+		notifyFullyRepainted();
+	}
+
+	private JDinkRectangle fitRectangleInto(
+			JDinkRectangle r, JDinkRectangle clipRectangle,
+			boolean adjustHorizontal, boolean adjustVertical) {
+		int width = r.getWidth();
+		int x = r.getX();
+		int height = r.getHeight();
+		int y = r.getY();
+		if (adjustHorizontal) {
+			width = Math.min(r.getWidth(), clipRectangle.getWidth());
+			x = Math.max(clipRectangle.getX(),
+					Math.min(r.getX(),
+							clipRectangle.getX() + clipRectangle.getWidth() - width));
+		}
+		if (adjustVertical) {
+			height = Math.min(r.getHeight(), clipRectangle.getHeight());
+			y = Math.max(clipRectangle.getY(),
+					Math.min(r.getY(),
+							clipRectangle.getY() + clipRectangle.getHeight() - height));
+		}
+		return r.getTransformedTo(x, y, width, height);
+	}
+
+	private void drawTextSprites(Graphics2D g2, JDinkSpriteDisplayInformation[] sprites) {
 		JDinkTextParser textParser = new JDinkTextParser();
 		int textBorder = 5;
-		Rectangle textClipRectangle = new Rectangle(
+		JDinkRectangle textClipRectangle = new JDinkRectangle(
 				textBorder, textBorder, 620 - 2 * textBorder, 400 - 2 * textBorder);
 		int[] fontColors = this.context.getFontColors();
 		textParser.setFontColors(fontColors);
@@ -513,23 +572,28 @@ public class JDinkSwingCanvas extends JPanel {
 			JDinkSpriteDisplayInformation sprite = sprites[i];
 			String text = sprite.getText();
 			if ((text != null) && (text.length() > 0)) {
+				JDinkRectangle textBounds = sprite.getTextBounds();
 				JDinkSpriteDisplayInformation parentSprite = sprite.getParent();
 				boolean centered = true;
-				Rectangle r;
+				JDinkRectangle r;
 				if ((parentSprite != null) && (parentSprite.getSequenceNumber() == 1200)) {
 					centered = false;
 				}
-				if ((parentSprite == null) || (parentSprite.getSpriteNumber() == 1000)) {
-					r = new Rectangle(sprite.getX(), sprite.getY(), 620, 400);
+				if (textBounds != null) {
+					r = textBounds.getTranslated(sprite.getX(), sprite.getY());
+				} else if ((parentSprite == null) || (parentSprite.getSpriteNumber() == 1000)) {
+//				if ((parentSprite != null) && (parentSprite.getSpriteNumber() == 1000)) {
+					// TODO review bounds, they are effectively set to the text clip bounds
+					r = new JDinkRectangle(sprite.getX(), sprite.getY(), 620, 400);
 				} else {
-					r = new Rectangle(sprite.getX(), sprite.getY() - 150, 150, 150);
+					int x = sprite.getX();
 					if (sprite.getX() + 150 > 620) {
-						r.x += ((sprite.getX() + 150) - 620) - (((sprite.getX() + 150) - 620) * 2);
+						x += ((sprite.getX() + 150) - 620) - (((sprite.getX() + 150) - 620) * 2);
 					}
+					r = new JDinkRectangle(x, sprite.getY() - 150, 150, 150);
 				}
-				Rectangle adjustedRectangle = fitRectangleInto(new Rectangle(r), textClipRectangle);
-				r.x = adjustedRectangle.x;
-				r.width = adjustedRectangle.width;
+				JDinkRectangle adjustedRectangle = fitRectangleInto(r, textClipRectangle, true, false);
+				r = adjustedRectangle;
 				int color = defaultFontColor;
 				List<TextLayout> textLayouts = new ArrayList<TextLayout>();
 				for (Iterator<JDinkTextFragment> it = textParser.getTextFragmentIterator(text); it.hasNext(); ) {
@@ -549,15 +613,14 @@ public class JDinkSwingCanvas extends JPanel {
 						textLayouts.clear();
 						while (measurer.getPosition() < characterIterator.getEndIndex()) {
 							// Get line
-							TextLayout textLayout = measurer.nextLayout(r.width);
+							TextLayout textLayout = measurer.nextLayout(r.getWidth());
 							textLayouts.add(textLayout);
 							textHeight += textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading();
 						}
-						r.height = textHeight;
-
-						adjustedRectangle = fitRectangleInto(new Rectangle(r), textClipRectangle);
-						r.y = adjustedRectangle.y;
-						r.height = adjustedRectangle.height;
+						r = r.getResizedTo(r.getWidth(), textHeight);
+						adjustedRectangle = fitRectangleInto(r, textClipRectangle,
+								false, true);
+						r = adjustedRectangle;
 //						log.info("text r=" + r);
 //						g2.setColor(new Color(8, 14, 21));
 //						drawTextLayouts(g2, textLayouts, r.x, r.y, r.width, centered);
@@ -569,51 +632,19 @@ public class JDinkSwingCanvas extends JPanel {
 //						drawTextLayouts(g2, textLayouts, r.x - 1, r.y, r.width, centered);
 
 						g2.setColor(new Color(8, 14, 21));
-						drawTextLayouts(g2, textLayouts, r.x - 1, r.y - 1, r.width, centered);
-						drawTextLayouts(g2, textLayouts, r.x - 1, r.y + 1, r.width, centered);
-						drawTextLayouts(g2, textLayouts, r.x + 1, r.y - 1, r.width, centered);
-						drawTextLayouts(g2, textLayouts, r.x + 1, r.y + 1, r.width, centered);
+						drawTextLayouts(g2, textLayouts, r.getX() - 1, r.getY() - 1, r.getWidth(), centered);
+						drawTextLayouts(g2, textLayouts, r.getX() - 1, r.getY() + 1, r.getWidth(), centered);
+						drawTextLayouts(g2, textLayouts, r.getX() + 1, r.getY() - 1, r.getWidth(), centered);
+						drawTextLayouts(g2, textLayouts, r.getX() + 1, r.getY() + 1, r.getWidth(), centered);
 
 						g2.setColor(new Color(color));
-						drawTextLayouts(g2, textLayouts, r.x, r.y, r.width, centered);
+						drawTextLayouts(g2, textLayouts, r.getX(), r.getY(), r.getWidth(), centered);
 					}
 				}
 			}
 		}
-
-		if (hardnessVisible) {
-			if (updateImage) {
-				int width = memoryImageData.getWidth();
-				int height = memoryImageData.getHeight();
-				hardnessImageExpireDate = new Date(now.getTime() + imageDataUpdateInterval);
-				if (hardnessImage == null) {
-					hardnessImageData = imageData;
-					hardnessImageSource = new MemoryImageSource(
-							width, height, imageData, 0, width);
-					hardnessImageSource.setAnimated(true);
-					hardnessImage = this.createImage(hardnessImageSource);
-				} else {
-					hardnessImageSource.newPixels(0, 0, width, height);
-				}
-			}
-	
-			if (hardnessImage != null) {
-				g2.drawImage(
-						hardnessImage,
-						context.getHardnessMap().getX(),
-						context.getHardnessMap().getY(),
-						this);
-			}
-		}
-		
-		if (!paintListeners.isEmpty()) {
-			for (JDinkSwingPaintListener paintListener: paintListeners) {
-				paintListener.onPaint(g2);
-			}
-		}
-		notifyFullyRepainted();
 	}
-	
+
 	public void setHardnessVisible(boolean hardnessVisible) {
 		if (this.hardnessVisible != hardnessVisible) {
 			this.hardnessVisible = hardnessVisible;
@@ -621,7 +652,7 @@ public class JDinkSwingCanvas extends JPanel {
 			this.repaint();
 		}
 	}
-	
+
 	public boolean isHardnessVisible() {
 		return hardnessVisible;
 	}

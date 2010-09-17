@@ -76,6 +76,7 @@ public class JDinkShowCollisionInfoPanel extends JPanel implements EnableDispose
 				spritePlacement = sprite.getSpritePlacement();
 				text = "sprite " + sprite.getSpriteNumber() +
 						", ct=" + sprite.getCollisionType() +
+						", l=" + sprite.getLevel() +
 						", v=" + (spritePlacement != null ? Integer.valueOf(spritePlacement.getVision()) : "?") +
 						", t=" + (spritePlacement != null ? Integer.valueOf(spritePlacement.getType()) : "?") +
 						", d=" + sprite.getDepthHint() +
