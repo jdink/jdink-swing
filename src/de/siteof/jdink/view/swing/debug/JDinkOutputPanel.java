@@ -19,6 +19,7 @@ public class JDinkOutputPanel extends JPanel {
 		super(new BorderLayout());
 		this.maxLineCount = maxRows;
 		this.add(new JScrollPane(textArea = new JTextArea()), BorderLayout.CENTER);
+		textArea.setEditable(false);
 	}
 
 	public void appendLine(String line) {
