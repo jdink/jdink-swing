@@ -63,6 +63,8 @@ public class JDinkShowCollisionInfoPanel extends JPanel implements EnableDispose
 		private final JDinkShape bounds;
 		private final JDinkPoint location;
 		private final JDinkMapSpritePlacement spritePlacement;
+		@SuppressWarnings("unused")
+		private final JDinkSprite spriteCopy; // include the sprite as well
 
 		public CollisionInformation(JDinkCollision collision) {
 			String text = null;
@@ -70,9 +72,10 @@ public class JDinkShowCollisionInfoPanel extends JPanel implements EnableDispose
 			JDinkShape bounds = null;
 			JDinkPoint location = null;
 			JDinkMapSpritePlacement spritePlacement = null;
+			JDinkSprite sprite = null;
 			if (collision instanceof JDinkSpriteCollision) {
 				JDinkSpriteCollision spriteCollision = (JDinkSpriteCollision) collision;
-				JDinkSprite sprite = spriteCollision.getSprite();
+				sprite = spriteCollision.getSprite();
 				spritePlacement = sprite.getSpritePlacement();
 				text = "sprite " + sprite.getSpriteNumber() +
 						", ct=" + sprite.getCollisionType() +
@@ -101,6 +104,19 @@ public class JDinkShowCollisionInfoPanel extends JPanel implements EnableDispose
 			this.bounds = bounds;
 			this.location = location;
 			this.spritePlacement = spritePlacement;
+			if (sprite != null) {
+				try {
+					sprite = sprite.clone();
+					sprite.setSequence(null);
+					sprite.setBrain(null);
+					sprite.setParentSprite(null);
+					sprite.setScriptInstance(null);
+				} catch (CloneNotSupportedException e) {
+					log.error("[CollisionInformation] failed to clone sprite", e);
+					sprite = null;
+				}
+			}
+			this.spriteCopy = sprite;
 		}
 
 		@Override
